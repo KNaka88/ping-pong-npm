@@ -25,20 +25,28 @@ $(document).ready(function(){
   $('#time').text(moment());
 });
 
-var apiKey = "";
+
+var Weather = require('./../js/weather.js').weatherModule;
+
+var displayHumidity = function(city, humidityData) {
+  $('.showWeather').append("The humidity in " + city + " is " + humidityData + "%<br>");
+};
+
+var displayTemperature = function(city, temperatureData) {
+  $('.showWeather').append("The temperature in " + city + " is " + temperatureData + "&#8451;<br>");
+};
+
+
 
 $(document).ready(function() {
+  var currentWeatherObject = new Weather();
   $('#weatherLocation').click(function() {
     var city = $('#location').val();
     $('#location').val("");
-    $('.showWeather').text("The city you have chosen is " + city + ".");
-    $.get('http://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=' + apiKey)
-      .then(function(response){
-        $('.showWeather').append("The Temperture in  " + city + " is " + (parseFloat(response.main.temp)-273.15).toFixed(2) + "&#8451;<br>");
-        $('.showWeather').append("The humidity in " + city + " is " + response.main.humidity + "%");
-      })
-      .fail(function(error) {
-        $('.showWeather').text(error.responseJSON.message);
-      });
+
+
+    $('.showWeather').text("The city you have chosen is " + city + "<br>");
+    currentWeatherObject.getHumidity(city, displayHumidity);
+    currentWeatherObject.getTemperature(city, displayTemperature);
   });
 });
